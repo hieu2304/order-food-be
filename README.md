@@ -1,56 +1,44 @@
-# Advanced Challenge
+# Kart Order Food API
 
-Build an API server implementing our OpenAPI spec for food ordering API in [Go](https://go.dev).\
-You can find our [API Documentation](https://orderfoodonline.deno.dev/public/openapi.html) here.
+A RESTful API for food ordering system built with Go and Fiber.
 
-API documentation is based on [OpenAPI3.1](https://swagger.io/specification/v3/) specification.
-You can also find spec file [here](https://orderfoodonline.deno.dev/public/openapi.yaml).
+## Features
 
-> The API immplementation example available to you at orderfoodonline.deno.dev/api is simplified and doesn't handle some edge cases intentionally.
-> Use your best judgement to build a Robust API server.
+- Product management (CRUD operations)
+- Order creation and management
+- PostgreSQL database
+- Swagger API documentation
 
-## Basic Requirements
+## Prerequisites
 
-- Implement all APIs described in the OpenAPI specification
-- Conform to the OpenAPI specification as close to as possible
-- Implement all features our [demo API server](https://orderfoodonline.deno.dev) has implemented
-- Validate promo code according to promo code validation logic described below
+- Go 1.22 or higher
+- PostgreSQL
+- Git
 
-### Promo Code Validation
+## Installation
 
-You will find three big files containing random text in this repositotory.\
-A promo code is valid if the following rules apply:
+1. Clone the repository:
+```bash
+git clone https://github.com/hieu2304/order-food-be.git
+cd order-food-be
+```
 
-1. Must be a string of length between 8 and 10 characters
-2. It can be found in **at least two** files
+2. Install dependencies:
+```bash
+go mod download
+```
 
-> Files containing valid coupons are couponbase1.gz, couponbase2.gz and couponbase3.gz
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your database credentials
+```
 
-You can download the files from here
+4. Run the application:
+```bash
+go run main.go
+```
 
-[file 1](https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase1.gz)
-[file 2](https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase2.gz)
-[file 3](https://orderfoodonline-files.s3.ap-southeast-2.amazonaws.com/couponbase3.gz)
+## API Documentation
 
-**Example Promo Codes**
-
-Valid promo codes
-
-- HAPPYHRS
-- FIFTYOFF
-
-Invalid promo codes
-
-- SUPER100
-
-> [!TIP]
-> it should be noted that there are more valid and invalid promo codes that those shown above.
-
-## Getting Started
-
-You might need to configure Git LFS to clone this repository\
-https://github.com/oolio-group/kart-challenge/tree/advanced-challenge/backend-challenge
-
-1. Use this repository as a template and create a new repository in your account
-2. Start coding
-3. Share your repository
+Access the Swagger documentation at: http://localhost:3000/swagger/
