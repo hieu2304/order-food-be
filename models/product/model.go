@@ -6,3 +6,8 @@ type Product struct {
 	Price    float64 `json:"price"`
 	Category string  `json:"category"`
 }
+
+type Pagination struct {
+	Page     int `json:"page"`
+	PageSize int `json:"page_size"`
+}

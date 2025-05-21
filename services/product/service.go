@@ -17,8 +17,8 @@ func NewService() *Service {
 	}
 }
 
-func (s *Service) GetAll() ([]product_model.Product, error) {
-	return s.repo.FindAll()
+func (s *Service) GetAll(pagination *product_model.Pagination) ([]product_model.Product, error) {
+	return s.repo.FindAll(pagination)
 }
 
 func (s *Service) GetByID(id string) (*product_model.Product, error) {
@@ -31,4 +31,24 @@ func (s *Service) GetByID(id string) (*product_model.Product, error) {
 
 func (s *Service) Create(product *product_model.Product) error {
 	return s.repo.Create(product)
+}
+
+func (s *Service) Update(id string, product *product_model.Product) error {
+	idUint, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	_, err = s.repo.FindByID(uint(idUint))
+	if err != nil {
+		return err
+	}
+	return s.repo.Update(product)
+}
+
+func (s *Service) Delete(id string) error {
+	idUint, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return err
+	}
+	return s.repo.Delete(uint(idUint))
 }

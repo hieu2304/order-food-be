@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	order_model "github.com/hieu2304/order-food-be/models/order"
+	product_model "github.com/hieu2304/order-food-be/models/product"
 	order_repo "github.com/hieu2304/order-food-be/repos/order"
 	product_repo "github.com/hieu2304/order-food-be/repos/product"
 )
@@ -25,24 +26,15 @@ func (s *Service) CreateOrder(req *order_model.OrderRequest) (*order_model.Order
 	if err := s.validateOrderRequest(req); err != nil {
 		return nil, err
 	}
-	products, err := s.productRepo.FindAll()
-	if err != nil {
-		return nil, errors.New("failed to fetch products")
-	}
 
 	orderItems := make([]order_model.OrderItem, len(req.Items))
+	products := make([]product_model.Product, len(req.Items))
 	for i, item := range req.Items {
-		productExists := false
-		for _, p := range products {
-			if p.ID == item.ProductID {
-				productExists = true
-				break
-			}
-		}
-		if !productExists {
+		product, err := s.productRepo.FindByID(item.ProductID)
+		if err != nil {
 			return nil, errors.New("product not found: " + strconv.FormatUint(uint64(item.ProductID), 10))
 		}
-
+		products[i] = *product
 		orderItems[i] = order_model.OrderItem{
 			ProductID: item.ProductID,
 			Quantity:  item.Quantity,
@@ -72,6 +64,7 @@ func (s *Service) GetOrder(id string) (*order_model.Order, error) {
 	}
 	return order, nil
 }
+
 func (s *Service) validateOrderRequest(req *order_model.OrderRequest) error {
 	if len(req.Items) == 0 {
 		return errors.New("order must contain at least one item")

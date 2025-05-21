@@ -21,10 +21,16 @@ func NewApplication() *Application {
 // @Tags products
 // @Accept json
 // @Produce json
+// @Param page query int false "Page number" default(1)
+// @Param page_size query int false "Page size" default(10)
 // @Success 200 {array} product_model.Product
 // @Router /product [get]
 func (a *Application) GetAll(c *fiber.Ctx) error {
-	products, err := a.service.GetAll()
+	pagination := &product_model.Pagination{
+		Page:     c.QueryInt("page", 1),
+		PageSize: c.QueryInt("page_size", 10),
+	}
+	products, err := a.service.GetAll(pagination)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to fetch products",
@@ -78,8 +84,60 @@ func (a *Application) Create(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(product)
 }
 
+// @Summary Update a product
+// @Description Update a product with the provided details
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Param product body product_model.Product true "Product"
+// @Success 200 {object} product_model.Product
+// @Failure 400 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /product/{id} [put]
+func (a *Application) Update(c *fiber.Ctx) error {
+	id := c.Params("id")
+	var product product_model.Product
+	if err := c.BodyParser(&product); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+	err := a.service.Update(id, &product)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update product",
+		})
+	}
+	return c.JSON(product)
+}
+
+// @Summary Delete a product
+// @Description Delete a product by its ID
+// @Tags products
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /product/{id} [delete]
+func (a *Application) Delete(c *fiber.Ctx) error {
+	id := c.Params("id")
+	err := a.service.Delete(id)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete product",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Product deleted successfully",
+	})
+}
+
 func RegisterProductRoutes(productRouter fiber.Router) {
 	productRouter.Get("/", NewApplication().GetAll)
 	productRouter.Get("/:id", NewApplication().GetByID)
 	productRouter.Post("/", NewApplication().Create)
+	productRouter.Put("/:id", NewApplication().Update)
+	productRouter.Delete("/:id", NewApplication().Delete)
 }

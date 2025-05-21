@@ -20,9 +20,9 @@ func (r *Repository) Create(product *product_model.Product) error {
 	return r.db.Create(product).Error
 }
 
-func (r *Repository) FindAll() ([]product_model.Product, error) {
+func (r *Repository) FindAll(pagination *product_model.Pagination) ([]product_model.Product, error) {
 	var products []product_model.Product
-	err := r.db.Find(&products).Error
+	err := r.db.Limit(pagination.PageSize).Offset((pagination.Page - 1) * pagination.PageSize).Find(&products).Error
 	return products, err
 }
 
